@@ -33,7 +33,7 @@ public class Client {
     }
 
     public byte[] createHead(int flag, int fragmentCount){
-        fragmentCount = this.fragmentCount;
+        this.fragmentCount = fragmentCount;
 
         int[] headInts = new int[]{flag, fragmentCount};
         byte[] headBytes;

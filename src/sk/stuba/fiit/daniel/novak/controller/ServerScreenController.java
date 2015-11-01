@@ -87,9 +87,16 @@ public class ServerScreenController {
                 System.arraycopy(server.getBuffer(), 0, head, 0, 8);
 
                 int[] pole = server.fromByteArray(head);
-                System.out.println(pole[0] + " " + " " + pole[1]);
+                //System.out.println(pole[0] + " " + " " + pole[1]);
 
-                String sprava = new String(server.getBuffer(), 0, server.getBuffer().length);
+                if(pole[0] == 1){
+                    System.out.println("Prisiel packet typu MESSAGE.");
+                    if(pole[1] == 0){
+                        System.out.println("Tato sprava bola mensia ako velkost fragmentu.\n");
+                    }
+                }
+
+                String sprava = new String(server.getBuffer());
                 serverScreen.getTextArea().appendText(sprava);
                 serverScreen.getTextArea().appendText("\n");
                 Arrays.fill(server.getBuffer(), (byte) 0);

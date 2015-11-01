@@ -84,8 +84,20 @@ public class ClientScreenController {
     }
 
     public void send() {
+        byte[] head;
+        byte[] temp;
         if (client.getBuffer().length <= client.getFragmentSize()) {
-            client.setDatagramPacket(new DatagramPacket(client.getBuffer(), client.getBuffer().length, client.getAddress(), client.getPort()));
+            temp = new byte[client.getBuffer().length + 8];
+            System.arraycopy(client.getBuffer(), 0, temp, 0, client.getBuffer().length);
+            head = client.createHead(1, 0);
+
+            try {
+                temp = client.mergeHeadAndData(head, temp);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            client.setDatagramPacket(new DatagramPacket(temp, temp.length, client.getAddress(), client.getPort()));
             socketSend();
 
             // FRAGMENTACIA
@@ -95,13 +107,13 @@ public class ClientScreenController {
             while (client.getBuffer().length > (client.getFragmentSize() * (count))) {
                 count++;
             }
-            byte[] temp = new byte[client.getFragmentSize() + 8];
+            temp = new byte[client.getFragmentSize() + 8];
             int i = 0;
             do {
 
                 System.arraycopy(client.getBuffer(), i * client.getFragmentSize(), temp, 0, client.getFragmentSize());
 
-                byte[] head = client.createHead(1, (i + 1));
+                head = client.createHead(1, (i + 1));
                 try {
                     temp = client.mergeHeadAndData(head, temp);
                 } catch (IOException e) {
