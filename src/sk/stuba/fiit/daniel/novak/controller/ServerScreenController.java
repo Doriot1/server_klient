@@ -94,6 +94,15 @@ public class ServerScreenController {
                     if(pole[1] == 0){
                         System.out.println("Tato sprava bola mensia ako velkost fragmentu.\n");
                     }
+                    else{
+                        System.out.println("Prisiel fragment cislo: " + pole[1]);
+                    }
+                }
+                else if(pole[0] == 2){
+
+                    System.out.println("Prisiel packet typu MESSAGE.");
+                    System.out.println("Prisiel fragment cislo: " + pole[1]);
+                    System.out.println("---------------------------------------------------------------------------------\nOdosielanie fragmentovej spravy ukoncene. Posledny prijaty fragment by mal byt: " + pole[1] + "\n---------------------------------------------------------------------------------");
                 }
 
                 String sprava = new String(server.getBuffer());

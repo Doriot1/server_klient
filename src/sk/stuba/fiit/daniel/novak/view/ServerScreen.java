@@ -17,6 +17,7 @@ public class ServerScreen extends GridPane {
     private TextField port;
     private Label label1;
     private Label error;
+    private Label info;
     private Button start;
     private Button exit;
 
@@ -38,6 +39,7 @@ public class ServerScreen extends GridPane {
 
         label1 = new Label("Port number:");
         error = new Label("Error message: ");
+        info = new Label("Info: ");
 
         start = new Button("BIND");
         exit = new Button("Exit");
@@ -50,6 +52,7 @@ public class ServerScreen extends GridPane {
     private void add() {
         add(textArea, 0, 2, 6, 5);
         add(error, 0, 7, 6, 1);
+        add(info, 0, 8, 6, 1);
         add(start, 0, 1);
         add(label1, 0, 0, 2, 1);
         add(port, 1, 0);
@@ -78,6 +81,14 @@ public class ServerScreen extends GridPane {
 
     public void setError(Label error) {
         this.error = error;
+    }
+
+    public Label getInfo() {
+        return info;
+    }
+
+    public void setInfo(Label info) {
+        this.info = info;
     }
 
     public void setServerScreenListener(ServerScreenListener serverScreenListener) {

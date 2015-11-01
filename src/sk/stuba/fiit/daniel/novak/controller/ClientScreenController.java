@@ -120,10 +120,6 @@ public class ClientScreenController {
                     e.printStackTrace();
                 }
 
-                String string = new String(temp, 0, client.getFragmentSize());
-                System.out.println(string);
-
-
                 client.setDatagramPacket(new DatagramPacket(temp, client.getFragmentSize() + 8, client.getAddress(), client.getPort()));
                 socketSend();
                 i++;
@@ -131,8 +127,17 @@ public class ClientScreenController {
             } while (client.getBuffer().length > (client.getFragmentSize() * (i + 1)));
 
             Arrays.fill(temp, (byte) 0);
+            temp = new byte[(client.getFragmentSize() * (i + 1)) - client.getBuffer().length + 8];
             System.arraycopy(client.getBuffer(), i * client.getFragmentSize(), temp, 0, client.getBuffer().length - (i * client.getFragmentSize()));
-            client.setDatagramPacket(new DatagramPacket(temp, client.getFragmentSize(), client.getAddress(), client.getPort()));
+            head = client.createHead(2, count);
+
+            try {
+                temp = client.mergeHeadAndData(head, temp);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            client.setDatagramPacket(new DatagramPacket(temp, temp.length, client.getAddress(), client.getPort()));
             socketSend();
             Arrays.fill(temp, (byte) 0);
         }
