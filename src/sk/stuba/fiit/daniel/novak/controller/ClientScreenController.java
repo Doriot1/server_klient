@@ -14,6 +14,7 @@ import java.util.Arrays;
  */
 public class ClientScreenController {
     private Client client;
+    private ClientThread clientThread;
 
     public ClientScreenController(ClientScreen clientScreen, Context context) {
 
@@ -47,11 +48,14 @@ public class ClientScreenController {
                         client.setAddress(InetAddress.getByName(client.getAddr()));
                         client.setBound(true);
                         clientScreen.getButton1().setText("Disconnect");
+                        clientScreen.getError().setText("Error message: ");
                     } catch (UnknownHostException e) {
                         clientScreen.getError().setText("Error message: UnknownHostException, wrong IP format.");
                         throw new IllegalArgumentException();
                     }
 
+                    //    clientThread = new ClientThread();
+                    //    clientThread.start();
                 }
             }
 
@@ -65,7 +69,6 @@ public class ClientScreenController {
                     Arrays.fill(client.getBuffer(), (byte) 0);
                 } else
                     clientScreen.getError().setText("Error message: Please connect to server first.");
-
             }
 
             @Override
@@ -74,44 +77,69 @@ public class ClientScreenController {
                     MainScreen mainScreen = new MainScreen(context);
                     context.switchScene(mainScreen);
                     new MainScreenController(context, mainScreen);
-                }
-                else
+                } else
                     clientScreen.getError().setText("Error message: Please disconnect first before exiting.");
             }
         });
     }
 
     public void send() {
-
         if (client.getBuffer().length <= client.getFragmentSize()) {
             client.setDatagramPacket(new DatagramPacket(client.getBuffer(), client.getBuffer().length, client.getAddress(), client.getPort()));
-            socket();
+            socketSend();
 
             // FRAGMENTACIA
         } else if (client.getBuffer().length > client.getFragmentSize()) {
-            byte[] temp = new byte[client.getFragmentSize()];
+            int count = 1;
+            // zistenie poctu fragmentov
+            while (client.getBuffer().length > (client.getFragmentSize() * (count))) {
+                count++;
+            }
+            byte[] temp = new byte[client.getFragmentSize() + 8];
             int i = 0;
             do {
+
                 System.arraycopy(client.getBuffer(), i * client.getFragmentSize(), temp, 0, client.getFragmentSize());
-                client.setDatagramPacket(new DatagramPacket(temp, client.getFragmentSize(), client.getAddress(), client.getPort()));
-                socket();
+
+                byte[] head = client.createHead(1, (i + 1));
+                try {
+                    temp = client.mergeHeadAndData(head, temp);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                String string = new String(temp, 0, client.getFragmentSize());
+                System.out.println(string);
+
+
+                client.setDatagramPacket(new DatagramPacket(temp, client.getFragmentSize() + 8, client.getAddress(), client.getPort()));
+                socketSend();
                 i++;
+
             } while (client.getBuffer().length > (client.getFragmentSize() * (i + 1)));
 
             Arrays.fill(temp, (byte) 0);
             System.arraycopy(client.getBuffer(), i * client.getFragmentSize(), temp, 0, client.getBuffer().length - (i * client.getFragmentSize()));
             client.setDatagramPacket(new DatagramPacket(temp, client.getFragmentSize(), client.getAddress(), client.getPort()));
-            socket();
+            socketSend();
             Arrays.fill(temp, (byte) 0);
         }
     }
 
-    private void socket() {
+    private void socketSend() {
         try {
             client.getDatagramSocket().send(client.getDatagramPacket());
             System.out.println("packet sent");
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private class ClientThread extends Thread {
+        public void run() {
+            while (!Thread.currentThread().isInterrupted()) {
+                client.createHead(1, 1);
+            }
         }
     }
 }

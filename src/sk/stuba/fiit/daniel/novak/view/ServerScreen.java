@@ -34,7 +34,7 @@ public class ServerScreen extends GridPane {
             getRowConstraints().add(new RowConstraints(50));
         }
         textArea = new TextArea();
-        port = new TextField();
+        port = new TextField("9001");
 
         label1 = new Label("Port number:");
         error = new Label("Error message: ");
@@ -53,7 +53,7 @@ public class ServerScreen extends GridPane {
         add(start, 0, 1);
         add(label1, 0, 0, 2, 1);
         add(port, 1, 0);
-        add(exit, 5, 7);
+        add(exit, 5, 8);
     }
 
     public Button getStart() {

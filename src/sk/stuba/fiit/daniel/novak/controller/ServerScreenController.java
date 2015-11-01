@@ -41,6 +41,7 @@ public class ServerScreenController {
                         server.setPort(Integer.parseInt(serverScreen.getPort().getText()));
                         server.setBound(true);
                         serverScreen.getStart().setText("UNBIND");
+                        serverScreen.getError().setText("Error message: ");
                         serverThread = new ServerThread();
                         serverThread.start();
                     } catch (NumberFormatException e) {
@@ -69,8 +70,8 @@ public class ServerScreenController {
             while (!Thread.currentThread().isInterrupted()) {
                 if (!server.getIsOpened()) {
                     openSocket();
-                    server.setOpened(true);
                 }
+
                 DatagramPacket datagramPacket = new DatagramPacket(server.getBuffer(), server.getBuffer().length);
 
                 try {
@@ -78,10 +79,19 @@ public class ServerScreenController {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                byte[] head = new byte[8];
+
 
                 server.setBuffer(datagramPacket.getData());
-                String sprava = new String(server.getBuffer());
+
+                System.arraycopy(server.getBuffer(), 0, head, 0, 8);
+
+                int[] pole = server.fromByteArray(head);
+                System.out.println(pole[0] + " " + " " + pole[1]);
+
+                String sprava = new String(server.getBuffer(), 0, server.getBuffer().length);
                 serverScreen.getTextArea().appendText(sprava);
+                serverScreen.getTextArea().appendText("\n");
                 Arrays.fill(server.getBuffer(), (byte) 0);
             }
         }

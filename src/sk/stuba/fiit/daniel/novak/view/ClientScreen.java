@@ -34,7 +34,7 @@ public class ClientScreen extends GridPane {
 
 
     private void init() {
-        setGridLinesVisible(true);
+        setGridLinesVisible(false);
         dstIP1 = new TextField();
 
         fragment = new TextField("65508");
