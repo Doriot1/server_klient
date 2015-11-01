@@ -18,6 +18,7 @@ public class ServerScreen extends GridPane {
     private Label label1;
     private Label error;
     private Button start;
+    private Button exit;
 
 
     private ServerScreenListener serverScreenListener;
@@ -39,8 +40,11 @@ public class ServerScreen extends GridPane {
         error = new Label("Error message: ");
 
         start = new Button("BIND");
+        exit = new Button("Exit");
 
         start.setOnAction(e -> serverScreenListener.onButtonReceive());
+        exit.setOnAction(e -> serverScreenListener.onButtonExit());
+        textArea.setEditable(false);
     }
 
     private void add() {
@@ -49,6 +53,7 @@ public class ServerScreen extends GridPane {
         add(start, 0, 1);
         add(label1, 0, 0, 2, 1);
         add(port, 1, 0);
+        add(exit, 5, 7);
     }
 
     public Button getStart() {
@@ -81,5 +86,6 @@ public class ServerScreen extends GridPane {
 
     public interface ServerScreenListener {
         void onButtonReceive();
+        void onButtonExit();
     }
 }

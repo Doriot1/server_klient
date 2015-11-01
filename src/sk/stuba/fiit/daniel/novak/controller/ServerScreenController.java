@@ -1,6 +1,8 @@
 package sk.stuba.fiit.daniel.novak.controller;
 
+import sk.stuba.fiit.daniel.novak.model.Context;
 import sk.stuba.fiit.daniel.novak.model.Server;
+import sk.stuba.fiit.daniel.novak.view.MainScreen;
 import sk.stuba.fiit.daniel.novak.view.ServerScreen;
 
 import java.io.IOException;
@@ -21,28 +23,43 @@ public class ServerScreenController {
     private ServerThread serverThread;
     private ServerScreen serverScreen;
 
-    public ServerScreenController(ServerScreen serverScreen) {
+    public ServerScreenController(ServerScreen serverScreen, Context context) {
         this.serverScreen = serverScreen;
         server = new Server();
 
-        serverScreen.setServerScreenListener(() -> {
-            if (server.isBound()) {
-                server.setBound(false);
-                serverScreen.getStart().setText("BIND");
-                serverThread.interrupt();
-                server.setOpened(false);
-                datagramSocket.close();
-            } else {
-                try {
-                    server.setPort(Integer.parseInt(serverScreen.getPort().getText()));
-                    server.setBound(true);
-                    serverScreen.getStart().setText("UNBIND");
-                    serverThread = new ServerThread();
-                    serverThread.start();
-                } catch (NumberFormatException e) {
-                    serverScreen.getError().setText("Error message: NumberFormatException, please fill out the port number.");
+        serverScreen.setServerScreenListener(new ServerScreen.ServerScreenListener() {
+            @Override
+            public void onButtonReceive() {
+                if (server.isBound()) {
+                    server.setBound(false);
+                    serverScreen.getStart().setText("BIND");
+                    serverThread.interrupt();
+                    server.setOpened(false);
+                    datagramSocket.close();
+                } else {
+                    try {
+                        server.setPort(Integer.parseInt(serverScreen.getPort().getText()));
+                        server.setBound(true);
+                        serverScreen.getStart().setText("UNBIND");
+                        serverThread = new ServerThread();
+                        serverThread.start();
+                    } catch (NumberFormatException e) {
+                        serverScreen.getError().setText("Error message: NumberFormatException, please fill out the port number.");
+                    }
                 }
             }
+
+            @Override
+            public void onButtonExit() {
+
+                if (serverScreen.getStart().getText().equals("BIND")) {
+                    MainScreen mainScreen = new MainScreen(context);
+                    context.switchScene(mainScreen);
+                    new MainScreenController(context, mainScreen);
+                } else
+                    serverScreen.getError().setText("Error message: Please unbind first before exiting.");
+            }
+
         });
     }
 

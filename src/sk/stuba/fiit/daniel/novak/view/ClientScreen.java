@@ -25,6 +25,7 @@ public class ClientScreen extends GridPane {
 
     private Button button1;
     private Button button2;
+    private Button button3;
 
     public ClientScreen() {
         init();
@@ -33,7 +34,7 @@ public class ClientScreen extends GridPane {
 
 
     private void init() {
-        setGridLinesVisible(false);
+        setGridLinesVisible(true);
         dstIP1 = new TextField();
 
         fragment = new TextField("65508");
@@ -47,9 +48,11 @@ public class ClientScreen extends GridPane {
 
         button1 = new Button("Connect");
         button2 = new Button("SEND");
+        button3 = new Button("Exit");
 
         button1.setOnAction(e -> clientScreenListener.onButtonBind());
         button2.setOnAction(e -> clientScreenListener.onButtonSend());
+        button3.setOnAction(e -> clientScreenListener.onButtonExit());
     }
 
     private void add() {
@@ -65,6 +68,7 @@ public class ClientScreen extends GridPane {
 
         add(button1, 1, 4);
         add(button2, 1, 9);
+        add(button3, 4, 12);
 
         add(message, 1, 5, 3, 3);
     }
@@ -108,5 +112,6 @@ public class ClientScreen extends GridPane {
     public interface ClientScreenListener {
         void onButtonBind();
         void onButtonSend();
+        void onButtonExit();
     }
 }

@@ -1,7 +1,9 @@
 package sk.stuba.fiit.daniel.novak.controller;
 
 import sk.stuba.fiit.daniel.novak.model.Client;
+import sk.stuba.fiit.daniel.novak.model.Context;
 import sk.stuba.fiit.daniel.novak.view.ClientScreen;
+import sk.stuba.fiit.daniel.novak.view.MainScreen;
 
 import java.io.IOException;
 import java.net.*;
@@ -13,7 +15,7 @@ import java.util.Arrays;
 public class ClientScreenController {
     private Client client;
 
-    public ClientScreenController(ClientScreen clientScreen) {
+    public ClientScreenController(ClientScreen clientScreen, Context context) {
 
         client = new Client();
 
@@ -37,7 +39,7 @@ public class ClientScreenController {
                         client.setAddr(clientScreen.getDstIP1().getText());
                         client.setPort(Integer.parseInt(clientScreen.getPort().getText()));
                         client.setFragment(Integer.parseInt(clientScreen.getFragment().getText()));
-                    } catch (NumberFormatException e){
+                    } catch (NumberFormatException e) {
                         clientScreen.getError().setText("Error message: NumberFormatException, fill out all fields.");
                         return;
                     }
@@ -55,7 +57,7 @@ public class ClientScreenController {
 
             @Override
             public void onButtonSend() {
-                if(clientScreen.getMessage().getText().equals(""))
+                if (clientScreen.getMessage().getText().equals(""))
                     return;
                 if (clientScreen.getButton1().getText().equals("Disconnect")) {
                     client.setBuffer(clientScreen.getMessage().getText().getBytes());
@@ -64,6 +66,17 @@ public class ClientScreenController {
                 } else
                     clientScreen.getError().setText("Error message: Please connect to server first.");
 
+            }
+
+            @Override
+            public void onButtonExit() {
+                if (clientScreen.getButton1().getText().equals("Connect")) {
+                    MainScreen mainScreen = new MainScreen(context);
+                    context.switchScene(mainScreen);
+                    new MainScreenController(context, mainScreen);
+                }
+                else
+                    clientScreen.getError().setText("Error message: Please disconnect first before exiting.");
             }
         });
     }
@@ -74,7 +87,7 @@ public class ClientScreenController {
             client.setDatagramPacket(new DatagramPacket(client.getBuffer(), client.getBuffer().length, client.getAddress(), client.getPort()));
             socket();
 
-        // FRAGMENTACIA
+            // FRAGMENTACIA
         } else if (client.getBuffer().length > client.getFragmentSize()) {
             byte[] temp = new byte[client.getFragmentSize()];
             int i = 0;

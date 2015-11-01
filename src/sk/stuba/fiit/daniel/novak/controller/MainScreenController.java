@@ -21,14 +21,14 @@ public class MainScreenController {
             public void onButtonClient() {
                 clientScreen = new ClientScreen();
                 context.switchScene(clientScreen);
-                new ClientScreenController(clientScreen);
+                new ClientScreenController(clientScreen, context);
             }
 
             @Override
             public void onButtonServer() {
                 serverScreen = new ServerScreen();
                 context.switchScene(serverScreen);
-                new ServerScreenController(serverScreen);
+                new ServerScreenController(serverScreen, context);
             }
         });
     }

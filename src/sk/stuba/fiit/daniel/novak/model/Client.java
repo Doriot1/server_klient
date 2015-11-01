@@ -24,13 +24,7 @@ public class Client {
         buffer = new byte[65508];
     }
 
-    public byte[] createHeader(byte flag, int fragmentCount) {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(5);
-        byteBuffer.put(flag);
-        byteBuffer.putInt(fragmentCount);
 
-        return byteBuffer.array();
-    }
 
     // setter and getters
     public void setPort(int port) {
