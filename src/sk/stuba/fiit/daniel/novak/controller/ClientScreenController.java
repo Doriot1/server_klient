@@ -39,6 +39,8 @@ public class ClientScreenController {
                     try {
                         client.setAddr(clientScreen.getDstIP1().getText());
                         client.setPort(Integer.parseInt(clientScreen.getPort().getText()));
+                        if(client.getPort() > 65508)
+                            client.setPort(65508);
                         client.setFragment(Integer.parseInt(clientScreen.getFragment().getText()));
                     } catch (NumberFormatException e) {
                         clientScreen.getError().setText("Error message: NumberFormatException, fill out all fields.");

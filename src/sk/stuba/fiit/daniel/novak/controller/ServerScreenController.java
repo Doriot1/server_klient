@@ -118,7 +118,6 @@ public class ServerScreenController {
             this.datagramSocket = new DatagramSocket(server.getPort());
             server.setOpened(true);
         } catch (SocketException e) {
-            e.printStackTrace();
         }
     }
 }
